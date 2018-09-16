@@ -1,0 +1,22 @@
+USE [Test]
+GO
+CREATE PROCEDURE [dbo].[sp_StokEkstresi]
+	@MalKodu nvarchar(30),
+	@StartDate int,
+	@EndDate int
+AS
+BEGIN
+	SELECT
+		  ROW_NUMBER() OVER(ORDER BY STI.Tarih ASC) AS SiraNo
+		, CASE WHEN STI.IslemTur = 0 THEN 'Giriþ' ELSE 'Çýkýþ' END AS IslemTur
+		, STI.EvrakNo
+		, CONVERT(VARCHAR(15), CAST(STI.Tarih - 2 AS datetime), 104) AS Tarih
+		, CASE WHEN STI.IslemTur = 0 THEN STI.Miktar ELSE 0 END AS GirisMiktar
+		, CASE WHEN STI.IslemTur = 1 THEN STI.Miktar ELSE 0 END AS CikisMiktar
+		, IslemTur AS IslemTurCode
+		, Miktar
+	FROM Test.dbo.STI AS STI
+	WHERE STI.MalKodu LIKE @MalKodu
+	AND Tarih BETWEEN @StartDate and @EndDate
+	ORDER BY STI.Tarih ASC
+END
