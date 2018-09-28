@@ -23,7 +23,7 @@ namespace StokEkstresi
             populateMalKodu();
             //txtStartDate.DateTime = DateTime.Now;
             //txtEndDate.DateTime = DateTime.Now.AddMonths(1);
-            getDate("%", DateTime.MinValue, DateTime.MaxValue);
+            getData("%", DateTime.MinValue, DateTime.MaxValue);
         }
 
         private void btnFilter_Click(object sender, EventArgs e)
@@ -46,11 +46,11 @@ namespace StokEkstresi
                 // string malkodu = luItem.Properties.GetKeyValueByDisplayText(luItem.Text).ToString();
                 if (string.IsNullOrEmpty(malkodu))
                 {
-                    getDate("%", txtStartDate.DateTime, txtEndDate.DateTime);
+                    getData("%", txtStartDate.DateTime, txtEndDate.DateTime);
                 }
                 else
                 {
-                    getDate(malkodu, txtStartDate.DateTime, txtEndDate.DateTime);
+                    getData(malkodu, txtStartDate.DateTime, txtEndDate.DateTime);
                 }
             
             
@@ -78,7 +78,7 @@ namespace StokEkstresi
             cnn.Dispose();
         }
 
-        void getDate(string _malzemeKodu, DateTime _startDate, DateTime _endDate)
+        void getData(string _malzemeKodu, DateTime _startDate, DateTime _endDate)
         {
             SqlConnection cnn = new SqlConnection(@"server=JESUS\SQLEXPRESS;database=Test;uid=sa;pwd=123");
             SqlCommand cmd = new SqlCommand("sp_StokEkstresi", cnn);
