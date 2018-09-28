@@ -28,8 +28,30 @@ namespace StokEkstresi
 
         private void btnFilter_Click(object sender, EventArgs e)
         {
-            string malkodu = luItem.Properties.GetKeyValueByDisplayText(luItem.Text).ToString();
-            getDate(malkodu, txtStartDate.DateTime, txtEndDate.DateTime);
+            if (string.IsNullOrEmpty(txtStartDate.DateTime.ToString()) || string.IsNullOrEmpty(txtEndDate.DateTime.ToString()))
+            {
+                MessageBox.Show("Lütfen tarih aralığını seçiniz.");
+                return;
+
+            }
+
+            if (txtStartDate.DateTime > txtEndDate.DateTime)
+            {
+                MessageBox.Show("Başlangıç tarihi bitiş tarihinden sonra olamaz.");
+                return;
+            }
+            
+                string malkodu = luItem.Properties.GetKeyValueByDisplayText(luItem.Text).ToString();
+                if (string.IsNullOrEmpty(malkodu))
+                {
+                    getDate("%", txtStartDate.DateTime, txtEndDate.DateTime);
+                }
+                else
+                {
+                    getDate(malkodu, txtStartDate.DateTime, txtEndDate.DateTime);
+                }
+            
+            
         }
 
         void populateMalKodu()
@@ -38,9 +60,9 @@ namespace StokEkstresi
             SqlCommand cmd = new SqlCommand("SELECT MalKodu, MalAdi FROM Test.dbo.STK ", cnn);
             cnn.Open();
 
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            SqlDataAdapter da = new SqlDataAdapter(cmd); /*DataAdapter ile aynı işlemi(okuma) yapıyor ikisini de kullanmak istedim*/
             DataTable dt = new DataTable();
-            da.Fill(dt);
+            da.Fill(dt); /*"Fill" DataTable'a verileri doldurma işlemi yapıyor*/
 
             luItem.Properties.DataSource = dt;
             luItem.Properties.ValueMember = "MalKodu";
@@ -81,27 +103,36 @@ namespace StokEkstresi
             float stokMiktari = 0;
             while (dr.Read())
             {
-                float miktar = float.Parse(dr["Miktar"].ToString());
 
-                if (int.Parse(dr["IslemTurCode"].ToString()) == 0)
+                //float miktar = float.Parse(dr["Miktar"].ToString());
+                float miktar;
+                if (float.TryParse(dr["Miktar"].ToString(), out miktar))
                 {
-                    stokMiktari += miktar;
-                }
-                else
-                {
-                    stokMiktari -= miktar;
+                    /*Parse işlemleri iki şekilde yapılabilir. TryParse ve Parse
+                     * TryParse boolean tipinde değer döndürür*/
+
+                    if (int.Parse(dr["IslemTurCode"].ToString()) == 0)
+                    {
+                        stokMiktari += miktar;
+                    }
+                    else
+                    {
+                        stokMiktari -= miktar;
+                    }
+
+                    StokEkstresiList.Add(new StokEkstresi
+                    {
+                        SiraNo = int.Parse(dr["SiraNo"].ToString()),
+                        IslemTur = dr["IslemTur"].ToString(),
+                        EvrakNo = dr["EvrakNo"].ToString(),
+                        Tarih = dr["Tarih"].ToString(),
+                        GirisMiktar = float.Parse(dr["GirisMiktar"].ToString()),
+                        CikisMiktar = float.Parse(dr["CikisMiktar"].ToString()),
+                        StokMiktar = stokMiktari
+                    });
                 }
 
-                StokEkstresiList.Add(new StokEkstresi
-                {
-                    SiraNo = int.Parse(dr["SiraNo"].ToString()),
-                    IslemTur = dr["IslemTur"].ToString(),
-                    EvrakNo = dr["EvrakNo"].ToString(),
-                    Tarih = dr["Tarih"].ToString(),
-                    GirisMiktar = float.Parse(dr["GirisMiktar"].ToString()),
-                    CikisMiktar = float.Parse(dr["CikisMiktar"].ToString()),
-                    StokMiktar = stokMiktari
-                });
+               
             };
 
             dr.Close();
