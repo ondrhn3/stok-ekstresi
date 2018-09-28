@@ -40,8 +40,10 @@ namespace StokEkstresi
                 MessageBox.Show("Başlangıç tarihi bitiş tarihinden sonra olamaz.");
                 return;
             }
-            
-                string malkodu = luItem.Properties.GetKeyValueByDisplayText(luItem.Text).ToString();
+
+                string malkodu = luItem.Text.ToString();
+                //Alttaki yazım şekli ile LookUpEdit'in kontrolünü if ile çözmeye çalıştığımızda kontrol edemiyor
+                // string malkodu = luItem.Properties.GetKeyValueByDisplayText(luItem.Text).ToString();
                 if (string.IsNullOrEmpty(malkodu))
                 {
                     getDate("%", txtStartDate.DateTime, txtEndDate.DateTime);
