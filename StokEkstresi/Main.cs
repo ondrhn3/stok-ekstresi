@@ -42,7 +42,7 @@ namespace StokEkstresi
             }
 
                 string malkodu = luItem.Text.ToString();
-                //Alttaki yazım şekli ile LookUpEdit'in kontrolünü if ile çözmeye çalıştığımızda kontrol edemiyor
+                //Alttaki yazım şekli ile LookUpEdit'in kontrolünü "if" ile çözmeye çalıştığımızda kontrol edemiyor
                 // string malkodu = luItem.Properties.GetKeyValueByDisplayText(luItem.Text).ToString();
                 if (string.IsNullOrEmpty(malkodu))
                 {
